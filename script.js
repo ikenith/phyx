@@ -98,7 +98,8 @@ function renderQ(){
   startQTimer();
 }
 function toggleHint(btn){
-  const box=document.getElementById('hint-box');
+  const box=btn.parentElement.querySelector('.hint-box');
+  if(!box) return;
   const showing=box.classList.contains('show');
   box.classList.toggle('show');
   btn.textContent=showing?'💡 Show Hint':'🙈 Hide Hint';
