@@ -70,9 +70,9 @@ sub{vertical-align:sub;}
 .ccard p{font-size:14px;color:#b0aac0;line-height:1.9;}.ccard strong{color:var(--tx);}
 
 /* Diagram box */
-.dbox{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:24px 20px;margin:16px 0;overflow-x:auto;}
+.dbox{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:24px 20px;margin:16px 0;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:var(--bd) var(--bg);max-width:100%;}
 .dbox-ttl{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:2px;color:var(--mu);text-transform:uppercase;margin-bottom:16px;text-align:center;}
-.dbox svg{display:block;width:100%;height:auto;min-width:650px;margin:0 auto;}
+.dbox svg{display:block;width:100%;height:auto;max-width:100%;margin:0 auto;}
 .dcap{margin-top:14px;padding-top:12px;border-top:1px solid var(--bd);}
 .dcap p{font-size:13px;color:#8884a0;line-height:1.8;}.dcap strong{color:var(--gold);}
 .capg{display:grid;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bd);}
