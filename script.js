@@ -22,6 +22,7 @@ function refreshHome(){
   document.getElementById('st-acc').textContent=p.totalQ>0?Math.round(p.totalC/p.totalQ*100)+'%':'–';
   document.getElementById('st-t').textContent=p.ts.filter(t=>t.done).length;
   p.ts.forEach((t,i)=>{const el=document.getElementById('tp'+i);if(el)el.textContent=t.done?t.b+'/25':'Not attempted';});
+  p.ch.forEach((d,i)=>{const el=document.getElementById('cp'+i);if(!el)return; if(d.a===0)el.textContent='Not started'; else if(d.b===10)el.textContent='Completed'; else el.textContent=`Best ${d.b}/10`;});
   const hasAny=p.totalQ>0||p.ts.some(t=>t.done);
   document.getElementById('prog-strip').style.display=hasAny?'block':'none';
   const rows=document.getElementById('prog-rows');rows.innerHTML='';
@@ -132,8 +133,9 @@ function nextQ(){
 function showChapterEnd(){
   const total=CHAPTERS[curChapter].questions.length;
   const pct=Math.round(score.c/total*100);
-  P.ch[curChapter].a++;P.ch[curChapter].b=Math.max(P.ch[curChapter].b,score.c);
-  if(score.c===total)P.ch[curChapter].done=true;
+  P.ch[curChapter].a++;
+  P.ch[curChapter].b=Math.max(P.ch[curChapter].b,score.c);
+  P.ch[curChapter].done=true;
   P.totalQ+=total;P.totalC+=score.c;save();
   showEnd(score.c,total,pct,'Chapter Complete!');
 }
@@ -237,6 +239,14 @@ function submitTest(){
   P.totalQ+=total;P.totalC+=correct;save();
   showEnd(correct,total,pct,'Test Complete!');
 }
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', refreshHome);
+} else {
+  refreshHome();
+}
+window.addEventListener('beforeunload', save);
+
 // ═══════════════ CHAPTER DATA ═══════════════
 const CHAPTERS=[
 {
@@ -565,7 +575,7 @@ const CHAPTERS=[
 <div class="tsec">
 <div class="slbl">Nucleus basics</div>
 <div class="ccard"><h3>☢ What's packed inside?</h3>
-<p>Nucleus of ᴬ_Z X: Z protons, N=A−Z neutrons. <strong>Nuclear radius R = R₀A^(1/3)</strong> where R₀=1.2 fm. Since volume ∝ R³ ∝ A and mass ∝ A, density = constant for ALL nuclei — a classic JEE fact. Nuclear forces are strongest in nature but range only ~2–3 fm.</p></div>
+<p>Nucleus of <sup>A</sup><sub>Z</sub>X: Z protons, N=A−Z neutrons. <strong>Nuclear radius R = R₀A<sup>1/3</sup></strong> where R₀=1.2 fm. Since volume ∝ R³ ∝ A and mass ∝ A, density = constant for ALL nuclei — a classic JEE fact. Nuclear forces are strongest in nature but range only ~2–3 fm.</p></div>
 
 <div class="dbox">
 <div class="dbox-ttl">Diagram 1 — Binding Energy per Nucleon vs Mass Number (Most Important Graph)</div>
@@ -666,7 +676,7 @@ const CHAPTERS=[
 <div class="fcell"><div class="fname">Mean Life</div><div class="feq">τ = 1/λ = 1.44 × T½</div><div class="fnote">After t=τ: 36.8% remains. After t=2τ: 13.5%</div></div>
 <div class="fcell"><div class="fname">Activity</div><div class="feq">A = λN = A₀e^(−λt)</div><div class="fnote">1 Ci=3.7×10¹⁰ Bq. 1 Bq=1 decay/s.</div></div>
 <div class="fcell"><div class="fname">Binding Energy</div><div class="feq">BE = Δm × 931.5 MeV</div><div class="fnote">Δm = Zm_p + Nm_n − M (in amu)</div></div>
-<div class="fcell"><div class="fname">Nuclear Radius</div><div class="feq">R = 1.2 × A^(1/3) fm</div><div class="fnote">Density constant for ALL nuclei.</div></div>
+<div class="fcell"><div class="fname">Nuclear Radius</div><div class="feq">R = 1.2 × A<sup>1/3</sup> fm</div><div class="fnote">Density constant for ALL nuclei.</div></div>
 </div>
 <div class="insight"><span class="ico">⭐</span><p><strong>Half-life shortcut:</strong> Count half-lives: n = t/T½. Fraction = (1/2)ⁿ. After 3 half-lives = 1/8 = 12.5%. After 10 = 1/1024 ≈ 0.1%.</p></div>
 <div class="insight"><span class="ico">🔑</span><p><strong>α-β chain counting:</strong> If ᴬ¹_Z₁X → ᴬ²_Z₂Y via n_α alpha and n_β beta: n_α=(A₁−A₂)/4. Then n_β = 2n_α−(Z₁−Z₂). Classic JEE problem type.</p></div>
@@ -681,7 +691,7 @@ const CHAPTERS=[
   {q:"Decay constant = 0.00231 per minute. Half-life:",topic:"Half-life from λ",diff:3,hint:"T½ = 0.693/λ.",opts:["150 min","300 min","600 min","75 min"],ans:1,sol:`<span class="sol-eq">T½ = 0.693/0.00231 = 300 min</span><div class="sol-ans">Answer: 300 min ✓</div>`},
   {q:"Activity 1000 dps initially, 125 dps after 3 hours. Half-life:",topic:"Activity → half-life",diff:5,hint:"A/A₀ = (1/2)^n. 125/1000=1/8=(1/2)^3. So n=3 half-lives in 3 hours.",opts:["1 hour","2 hours","30 min","1.5 hours"],ans:0,sol:`<span class="sol-eq">1000→500→250→125: n=3 in 3 h → T½=1 hour</span><div class="sol-ans">Answer: 1 hour ✓</div>`},
   {q:"₁H² + ₁H³ → ₂He⁴ + X. Identify X and reaction.\n(Δm=0.020 u, 1u=931.5 MeV)",topic:"Fusion Q-value — PYQ",diff:6,hint:"Balance A and Z. A: 2+3=4+A_X. Z: 1+1=2+Z_X. What particle has A=1, Z=0?",opts:["Proton; fission","Neutron; fusion","Neutron; fission","Alpha; fusion"],ans:1,sol:`<span class="sol-line">A: 5=4+1 → A_X=1. Z: 2=2+0 → Z_X=0 → neutron</span><span class="sol-eq">Q = 0.020×931.5 ≈ 18.6 MeV (fusion, energy released)</span><div class="sol-ans">Answer: Neutron; fusion ✓</div>`},
-  {q:"Nuclear radius of ²⁷Al is 3.6 fm. Find radius of ¹²⁵Te.\n(∛125=5, ∛27=3)",topic:"Nuclear radius — PYQ",diff:6,hint:"R ∝ A^(1/3). Ratio = (A_Te/A_Al)^(1/3) = (125/27)^(1/3). Use given cube roots.",opts:["7.2 fm","9.6 fm","4.8 fm","6.0 fm"],ans:3,sol:`<span class="sol-eq">R_Te/R_Al = (125/27)^(1/3) = 5/3</span><span class="sol-eq">R_Te = 3.6×5/3 = 6.0 fm</span><div class="sol-ans">Answer: 6.0 fm ✓</div>`},
+  {q:"Nuclear radius of ²⁷Al is 3.6 fm. Find radius of ¹²⁵Te.\n(∛125=5, ∛27=3)",topic:"Nuclear radius — PYQ",diff:6,hint:"R ∝ A<sup>1/3</sup>. Ratio = (A<sub>Te</sub>/A<sub>Al</sub>)<sup>1/3</sup> = (125/27)<sup>1/3</sup>. Use given cube roots.",opts:["7.2 fm","9.6 fm","4.8 fm","6.0 fm"],ans:3,sol:`<span class="sol-eq">R<sub>Te</sub>/R<sub>Al</sub> = (125/27)<sup>1/3</sup> = 5/3</span><span class="sol-eq">R<sub>Te</sub> = 3.6×5/3 = 6.0 fm</span><div class="sol-ans">Answer: 6.0 fm ✓</div>`},
   {q:"Mean life of sample = 100 s. % NOT decayed after 200 s?\n(e²≈7.389)",topic:"Mean life — PYQ",diff:7,hint:"Use N = N₀e^(−t/τ). t=200, τ=100, so t/τ=2. N/N₀=e^(−2)=1/e².",opts:["36.8%","13.5%","50%","25%"],ans:1,sol:`<span class="sol-eq">N/N₀ = e^(−200/100) = e^(−2) = 1/7.389 ≈ 13.5%</span><div class="sol-ans">Answer: 13.5% ✓</div>`},
   {q:"₉₂²³⁵U + n → ₅₆¹⁴¹Ba + ₃₆⁹²Kr + x·n. Find x.",topic:"Fission neutron count — PYQ",diff:7,hint:"Conserve A: 235+1 = 141+92+x. Solve.",opts:["1","2","3","4"],ans:2,sol:`<span class="sol-eq">236 = 233+x → x=3</span><span class="sol-line">3 neutrons → chain reaction!</span><div class="sol-ans">Answer: 3 ✓</div>`}
   ]
@@ -901,7 +911,7 @@ const TESTS=[
   {q:"Output of NOR gate is 1 when:",topic:"NOR gate",diff:2,hint:"NOR=(A+B)̄. It's 1 when OR output is 0.",opts:["Both inputs=1","At least one=1","Both inputs=0","Inputs differ"],ans:2,sol:`<span class="sol-line">NOR: Y=1 only when A=0 AND B=0.</span>`},
   {q:"Electron through 400 V. de Broglie wavelength:",topic:"de Broglie",diff:3,hint:"λ=12.3/√V Å. V=400.",opts:["0.615 Å","6.15 Å","0.0615 Å","1.23 Å"],ans:0,sol:`<span class="sol-eq">λ=12.3/√400=12.3/20=0.615 Å</span>`},
   {q:"First line of Lyman series (n=2→1).\n(R=1.097×10⁷ m⁻¹)",topic:"Lyman series",diff:3,hint:"1/λ=R(1/1−1/4)=3R/4",opts:["91.2 nm","121.6 nm","656 nm","486 nm"],ans:1,sol:`<span class="sol-eq">1/λ=R×3/4=8.23×10⁶ m⁻¹ → λ=121.6 nm</span>`},
-  {q:"Nuclear density is constant for all nuclei because:",topic:"Nuclear density",diff:3,hint:"R=R₀A^(1/3) → volume ∝ A. Mass ∝ A. So density = ?",opts:["All nuclei same mass","R∝A so density=const","R∝A^(1/3) so V∝A and ρ=const","Nuclear forces same"],ans:2,sol:`<span class="sol-line">R=R₀A^(1/3) → V∝R³∝A. Mass∝A → ρ=constant.</span>`},
+  {q:"Nuclear density is constant for all nuclei because:",topic:"Nuclear density",diff:3,hint:"R=R₀A<sup>1/3</sup> → volume ∝ A. Mass ∝ A. So density = ?",opts:["All nuclei same mass","R∝A so density=const","R∝A<sup>1/3</sup> so V∝A and ρ=const","Nuclear forces same"],ans:2,sol:`<span class="sol-line">R=R₀A<sup>1/3</sup> → V∝R³∝A. Mass∝A → ρ=constant.</span>`},
   {q:"α=0.98. Find β:",topic:"α→β",diff:3,hint:"β=α/(1−α)",opts:["49","51","98","0.02"],ans:0,sol:`<span class="sol-eq">β=0.98/0.02=49</span>`},
   {q:"Balmer series: electron transitions end at n=?",topic:"Series identification",diff:1,hint:"Each series identified by lower level.",opts:["n=1","n=2","n=3","n=4"],ans:1,sol:`<span class="sol-line">Balmer: transitions to n=2. Visible light.</span>`},
   {q:"In intrinsic semiconductor at room temp: n_e vs n_h:",topic:"Intrinsic SC",diff:2,hint:"Electrons and holes created in pairs in intrinsic.",opts:["n_e > n_h","n_e < n_h","n_e = n_h","n_e=n_h=0"],ans:2,sol:`<span class="sol-line">In intrinsic: e-h pairs created together → n_e=n_h=n_i</span>`},
@@ -928,7 +938,7 @@ const TESTS=[
   {q:"Total energy in ground state = −13.6 eV. Potential energy of electron:",topic:"PE in Bohr orbit",diff:4,hint:"For circular orbit: KE=−E_total. PE=E_total−KE=2E_total.",opts:["−13.6 eV","−27.2 eV","−6.8 eV","+13.6 eV"],ans:1,sol:`<span class="sol-eq">KE=+13.6eV, PE=E_total−KE=−13.6−13.6=−27.2eV</span>`},
   {q:"Time period of electron in nth Bohr orbit is proportional to:",topic:"Bohr period",diff:5,hint:"T=2πr/v. r∝n²/Z, v∝Z/n. Compute T.",opts:["n","n²","n³","n/Z²"],ans:2,sol:`<span class="sol-eq">T∝(n²/Z)/(Z/n)=n³/Z² → T∝n³</span>`},
   {q:"²³⁸U→²⁰⁶Pb decay series. Total α and β emitted:\n(n_α=(A₁−A₂)/4, n_β=2n_α−(Z₁−Z₂))",topic:"Decay series counting PYQ",diff:7,hint:"First find n_α=(238−206)/4. Then n_β=2n_α−(92−82).",opts:["8α, 6β","6α, 8β","8α, 8β","6α, 6β"],ans:0,sol:`<span class="sol-eq">n_α=(238−206)/4=8; n_β=16−10=6</span>`},
-  {q:"Nuclear density of ²⁷Al vs ²⁰⁸Pb:",topic:"Nuclear density",diff:3,hint:"R∝A^(1/3) makes nuclear density constant.",opts:["Al > Pb","Pb > Al","Equal","Cannot determine"],ans:2,sol:`<span class="sol-line">ρ=3m_p/(4πR₀³)≈2.3×10¹⁷ kg/m³ — same for ALL nuclei.</span>`},
+  {q:"Nuclear density of ²⁷Al vs ²⁰⁸Pb:",topic:"Nuclear density",diff:3,hint:"R∝A<sup>1/3</sup> makes nuclear density constant.",opts:["Al > Pb","Pb > Al","Equal","Cannot determine"],ans:2,sol:`<span class="sol-line">ρ=3m_p/(4πR₀³)≈2.3×10¹⁷ kg/m³ — same for ALL nuclei.</span>`},
   {q:"Sample goes from 80% to 10% in 45 minutes. Half-life:\n(80/2^n=10 → solve for n)",topic:"Half-life from two data points",diff:6,hint:"80/10=8=2³ → 3 half-lives in 45 min.",opts:["9 min","15 min","18 min","22.5 min"],ans:1,sol:`<span class="sol-eq">80→10: factor of 8=(1/2)³ → n=3 in 45min → T½=15min</span>`},
   {q:"Fermi level in p-type semiconductor lies:",topic:"Fermi level",diff:4,hint:"p-type has more holes (near valence band). Fermi level moves closer to which band?",opts:["Middle of gap","Near conduction band","Near valence band","Above conduction band"],ans:2,sol:`<span class="sol-line">p-type: excess holes → Fermi level shifts toward valence band.</span>`},
   {q:"At ν=2ν₀, KE=K. At ν=3ν₀, new KE:",topic:"KE vs frequency PYQ",diff:6,hint:"K=h(2ν₀−ν₀)=hν₀. New KE=h(3ν₀−ν₀)=2hν₀=2K.",opts:["2K","3K","K/2","K√2"],ans:0,sol:`<span class="sol-eq">K=hν₀; New KE=2hν₀=2K</span>`},
